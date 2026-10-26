@@ -1,11 +1,11 @@
-name: astrbot_plugin_group_chat_switch
+﻿name: astrbot_plugin_group_chat_switch
 display_name: 群聊开关
 desc: 用聊天指令按群开启/关闭 AI 聊天，写入 AstrBot 官方的会话级配置，开关立即生效，不需要开 WebUI。支持在群里直接切换，也支持私聊按群号远程切换。
 short_desc: 一句话开关某个群的聊天（指令仍可用）
 version: 1.0.0
-author: your-github-name
-repo: https://github.com/your-github-name/astrbot_plugin_group_chat_switch
-social_link: https://github.com/your-github-name
+author: jqs113
+repo: https://github.com/jqs113/astrbot_plugin_group_chat_switch
+social_link: https://github.com/jqs113
 tags:
   - 工具
   - 群管理
