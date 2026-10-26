@@ -1,4 +1,4 @@
-# 推送 astrbot_plugin_group_chat_switch 到你自己的 GitHub 仓库
+﻿# 推送 astrbot_plugin_group_chat_switch 到你自己的 GitHub 仓库
 # 用法（在本目录打开 PowerShell）：
 #     .\push_to_github.ps1 -GitHubUser 你的GitHub登录名
 # 说明：
@@ -20,9 +20,15 @@ Set-Location $here
 
 Write-Host "[1/5] 改写 metadata.yaml 里的占位作者与仓库地址" -ForegroundColor Cyan
 $metaPath = Join-Path $here "metadata.yaml"
-$meta = Get-Content $metaPath -Raw -Encoding UTF8
-$meta = $meta -replace 'your-github-name', $GitHubUser
-Set-Content -Path $metaPath -Value $meta -Encoding UTF8 -NoNewline
+$meta = [IO.File]::ReadAllText($metaPath, [Text.Encoding]::UTF8)
+if ($meta.Contains("your-github-name")) {
+    $meta = $meta -replace 'your-github-name', $GitHubUser
+    # 无 BOM 写回：PowerShell 5.1 的 Set-Content -Encoding UTF8 会加 BOM，YAML 会脏
+    [IO.File]::WriteAllText($metaPath, $meta, (New-Object Text.UTF8Encoding($false)))
+    Write-Host "  已写入作者 $GitHubUser" -ForegroundColor Green
+} else {
+    Write-Host "  占位已填好，跳过" -ForegroundColor DarkGray
+}
 
 Write-Host "[2/5] 提交改动" -ForegroundColor Cyan
 git add -A
