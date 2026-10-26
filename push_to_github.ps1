@@ -14,7 +14,8 @@ param(
     [string]$RepoName = "astrbot_plugin_group_chat_switch"
 )
 
-$ErrorActionPreference = "Stop"
+# 原生 git 会把正常提示写到 stderr，Stop 模式下会被当致命错误，故用 Continue + $LASTEXITCODE 判据
+$ErrorActionPreference = "Continue"
 $here = Split-Path -Parent $MyInvocation.MyCommand.Path
 Set-Location $here
 
@@ -66,8 +67,12 @@ Write-Host "[5/5] 推送代码" -ForegroundColor Cyan
 $cleanUrl = "https://github.com/$GitHubUser/$RepoName.git"
 $authedUrl = "https://$GitHubUser`:$token@github.com/$GitHubUser/$RepoName.git"
 
-git remote remove origin 2>$null
-git remote add origin $cleanUrl
+$existing = git remote
+if ($existing -contains "origin") {
+    git remote set-url origin $cleanUrl
+} else {
+    git remote add origin $cleanUrl
+}
 git push $authedUrl "HEAD:master" --force
 if ($LASTEXITCODE -eq 0) {
     git remote set-url origin $cleanUrl
