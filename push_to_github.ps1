@@ -19,6 +19,10 @@ $ErrorActionPreference = "Continue"
 $here = Split-Path -Parent $MyInvocation.MyCommand.Path
 Set-Location $here
 
+# 本机 git 的 CA 包缺失（D:/Git/mingw64/etc/ssl/certs/ca-bundle.crt 不存在），
+# 改用 Windows 自带证书库，否则 https 一律报 trust anchors
+git config http.sslBackend schannel
+
 Write-Host "[1/5] 改写 metadata.yaml 里的占位作者与仓库地址" -ForegroundColor Cyan
 $metaPath = Join-Path $here "metadata.yaml"
 $meta = [IO.File]::ReadAllText($metaPath, [Text.Encoding]::UTF8)
@@ -73,7 +77,7 @@ if ($existing -contains "origin") {
 } else {
     git remote add origin $cleanUrl
 }
-git push $authedUrl "HEAD:master" --force
+git push $authedUrl "HEAD:main" --force
 if ($LASTEXITCODE -eq 0) {
     git remote set-url origin $cleanUrl
     Write-Host "  推送完成：$cleanUrl" -ForegroundColor Green
